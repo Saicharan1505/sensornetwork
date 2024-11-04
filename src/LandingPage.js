@@ -1,15 +1,27 @@
-import React, { useState } from 'react';
+// LandingPage.js
+import React, { useState, useEffect } from 'react';
+import Header from './components/header';
 
 const LandingPage = () => {
-  const [isNavOpen, setIsNavOpen] = useState(false);
   const [locationAccess, setLocationAccess] = useState(null);
 
-  const toggleNavbar = () => {
-    setIsNavOpen(!isNavOpen);
-  };
+  useEffect(() => {
+    // Check if the user has already responded to the location access prompt
+    const accessGiven = sessionStorage.getItem('locationAccess');
+    const fromHome = sessionStorage.getItem('fromHome');
+
+    if (accessGiven && fromHome === 'true') {
+      setLocationAccess(accessGiven === 'true');
+    } else {
+      // Remove the 'fromHome' indicator if not coming from Home button
+      sessionStorage.removeItem('fromHome');
+    }
+  }, []);
 
   const handleLocationAccess = (access) => {
     setLocationAccess(access);
+    // Store user's response in sessionStorage
+    sessionStorage.setItem('locationAccess', access);
   };
 
   return (
@@ -62,104 +74,17 @@ const LandingPage = () => {
         </div>
       )}
 
-      {/* Main App Layout (Header, Navbar, Map View) */}
+      {/* Main App Layout */}
       {locationAccess !== null && (
         <>
-          {/* Header */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            padding: '1em',
-            backgroundColor: '#000000',
-            color: 'white',
-            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-            position: 'relative',
-          }}>
-            {/* Navbar Button */}
-            <button onClick={toggleNavbar} style={{
-              background: 'none',
-              border: 'none',
-              color: 'white',
-              fontSize: '2em',
-              cursor: 'pointer',
-              position: 'absolute',
-              left: '1em',
-            }}>
-              &#9776; {/* Hamburger icon */}
-            </button>
-
-            {/* Logo and App Title (Centered) */}
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '100%',
-            }}>
-              <div style={{ fontSize: '1.5em', fontWeight: 'bold' }}>Beat the Heat</div>
-            </div>
-
-            {/* Search Bar */}
-            <div style={{
-              position: 'absolute',
-              right: '1em',
-            }}>
-              <input
-                type="text"
-                placeholder="Search..."
-                style={{
-                  padding: '0.7em',
-                  borderRadius: '10px',
-                  border: '2px solid #007BFF',
-                  outline: 'none',
-                  fontSize: '1em',
-                  boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
-                }}
-              />
-            </div>
-          </div>
-
-          {/* Navbar Options */}
-          {isNavOpen && (
-            <nav style={{
-              display: 'flex',
-              flexDirection: 'column',
-              position: 'absolute',
-              top: '4em',
-              left: '1em',
-              backgroundColor: '#000000',
-              padding: '1em',
-              borderRadius: '5px',
-              boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
-              zIndex: '100',
-            }}>
-              {['Sensors', 'Views', 'Location Comparison', 'Historical Data', 'Settings', 'Help/Info', 'Download Data', 'Home'].map((item, index) => (
-                <button key={index} style={{
-                  background: 'none',
-                  border: 'none',
-                  color: 'white',
-                  textAlign: 'left',
-                  fontWeight: 'bold',
-                  marginBottom: '0.5em',
-                  padding: '0.5em',
-                  cursor: 'pointer',
-                  transition: 'background 0.3s',
-                }}
-                  onMouseOver={(e) => e.target.style.background = '#333'}
-                  onMouseOut={(e) => e.target.style.background = 'none'}
-                >
-                  {item}
-                </button>
-              ))}
-            </nav>
-          )}
-
+          <Header />
           {/* Map View */}
           <div style={{
-            marginTop: '3em',
+            marginTop: '1em',
             marginLeft: 'auto',
             marginRight: 'auto',
-            width: '85%',
-            height: '60vh',
+            width: '95%',
+            height: 'calc(100% - 100px)', // Make the map occupy all remaining space except header
             backgroundColor: '#d3d3d3',
             borderRadius: '15px',
             textAlign: 'center',
