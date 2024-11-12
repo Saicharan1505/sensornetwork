@@ -23,4 +23,6 @@ yarn-debug.log*
 yarn-error.log*
 
 # Data
-iu_summer.csv
+*.csv
+.venv
+config.ini
